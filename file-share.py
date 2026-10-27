@@ -62,7 +62,7 @@ from collections import deque
 # Accepts: 192.168.0.113 | 192.168.0.113:4444 | tcp://x.a.free.pinggy.link:41234
 #          https://abcd.a.free.pinggy.link | https://abcd.ngrok-free.app
 #          tcp://0.tcp.in.ngrok.io:12345 | any host, host:port or URL
-PEER_ADDRESS = '0.0.0.0'
+PEER_ADDRESS = ''
 
 PORT = 4444            # local port this program listens on (tunnel to this port)
 DOWNLOAD_FOLDER = ''   # '' = a "FileShare Downloads" folder next to this script
@@ -1280,9 +1280,10 @@ class PollClientConn(object):
                 break
             except Exception as exc:
                 last = exc
-                if self.tls and ctx is not None and is_verify_error(exc):
-                    self.holder[:] = []
-                    continue
+                if self.tls and ctx is not None:
+                    self.holder[:] = []      # only a context that worked is remembered
+                    if is_verify_error(exc):
+                        continue
                 raise
             finally:
                 conn.close()
