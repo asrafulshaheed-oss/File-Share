@@ -1,14 +1,17 @@
 # FileShare
 
-Send files and folders between two computers with **one Python script**.
+Send files and folders between two computers with **one script**.
 Works on the same Wi-Fi or over the internet with **Pinggy**, **ngrok** or **Cloudflare**.
 Just paste an address: the connection type is detected automatically.
 
-```
-python file-share.py
-```
+There are two versions that talk to each other, so each user picks one:
 
-No installs and no extra packages. Only **Python 3.6+** is needed.
+| Version | Start it with | Needs |
+|---|---|---|
+| 🐍 `file-share.py` | `python file-share.py` | Python 3.6+ (Linux, macOS, Windows, phones) |
+| 🪟 `file-share.cs` | double-click `file-share.bat` | Nothing on Windows 10/11 |
+
+Keep `file-share.bat` next to `file-share.cs`. The guides below say `python file-share.py`; a C# user runs `file-share.bat` at that step instead.
 
 <details>
 <summary><b>✨ Features</b></summary>
@@ -26,6 +29,7 @@ No installs and no extra packages. Only **Python 3.6+** is needed.
 - ♻️ **Resume**: if the connection drops or the tunnel restarts, the transfer continues where it stopped
 - 🛡️ **Safe**: every block is checksummed, nothing is overwritten, and free disk space is checked first
 - 💻 **Cross-platform**: Windows, macOS, Linux, Android (Termux), iOS (a-Shell / Pythonista)
+- 🤝 **Python ↔ C#**: `file-share.py` and `file-share.cs` connect to each other over every connection type
 
 </details>
 
@@ -45,8 +49,42 @@ Pick **one** method, then open its guide under **Setup guides**. Click any ▶ t
 **Who does what**
 
 - 👤 **User 1** runs the tunnel and **sends the address** to User 2.
-- 👤 **User 2** puts that address in `file-share.py`.
+- 👤 **User 2** puts that address in `file-share.py` (or `file-share.cs`).
 - Only User 2 edits the file. User 1 changes nothing.
+
+<details>
+<summary><b>🪟 Using the C# version (file-share.cs)</b></summary>
+
+**Windows: nothing to install**
+
+1. Put `file-share.cs` and `file-share.bat` in the same folder.
+2. Double-click `file-share.bat`.
+
+The first time, it builds `file-share.exe` with the C# compiler that is already inside Windows (about 2 seconds), then starts it. If Windows Firewall asks, click **Allow access**.
+
+**Putting in the address (User 2 only)**
+
+Either open `file-share.cs` in Notepad and fill in the line near the top:
+```
+public static string PEER_ADDRESS = "tcp://abc.a.free.pinggy.link:41234";
+```
+or skip editing and start it from Command Prompt with the address:
+```
+file-share.bat tcp://abc.a.free.pinggy.link:41234
+```
+
+**Other ways to run it**
+
+| Where | Command |
+|---|---|
+| Any OS with the .NET 10 SDK | `dotnet run file-share.cs` |
+| Linux / macOS with Mono | `mcs file-share.cs` then `mono file-share.exe` |
+
+`dotnet run file-share.cs` works only when the .NET 10 SDK is installed; Windows doesn't include it. `file-share.bat` uses it automatically when it's there.
+
+Everything else is the same as the Python version: the commands, Ctrl+Z, the y/n question, resume and the downloads folder ("FileShare Downloads" next to the file).
+
+</details>
 
 ## 🔌 Setup guides
 
@@ -374,7 +412,9 @@ The connection always stays open. Shortcut: `cancel 2 3` jumps straight to the q
 | `points to this computer itself` | User 1 pasted their own address. Leave `PEER_ADDRESS = ''` on User 1 and send the address to User 2. |
 | `The tunnel is up, but FileShare is not running` | User 1's tunnel works, but the program isn't started. Start `python file-share.py` on User 1's computer: it connects by itself. |
 | `Port 4444 is busy` | Another copy is already running. Close it. |
-| LAN won't connect | Allow Python through the firewall, or use Pinggy. |
+| LAN won't connect | Allow Python (or `file-share.exe`) through the firewall, or use Pinggy. |
+| `file-share.bat` says the compiler was not found | Turn on **.NET Framework 4.8** in *Turn Windows features on or off*, or install the .NET SDK. |
+| `Could not rebuild` | FileShare is already open in another window. Close it, then start again. |
 | `one upload can offer up to 1000` | Put the files in a folder and upload the folder: a folder can hold any number of files. |
 | ngrok stopped working | The free plan allows 1 GB of data, 20,000 HTTP requests and 5,000 TCP connections a month. Switch to Pinggy or Cloudflare. |
 
@@ -392,7 +432,8 @@ The connection always stays open. Shortcut: `cancel 2 3` jumps straight to the q
 <details>
 <summary><b>📋 Requirements</b></summary>
 
-- Python 3.6 or newer: that's it.
+- Python version: Python 3.6 or newer, that's it.
+- C# version: Windows 10 or 11 (nothing to install), or any OS with the .NET 10 SDK or Mono.
 - Android: [Termux](https://termux.dev) with `pkg install python openssh`
 - iOS: a-Shell or Pythonista
 
